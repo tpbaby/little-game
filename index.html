@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+   <div id="box">
+      <div class="bg"></div>
+      <div class="login">
+         <div class="regular">游戏规则：</div>
+         <div class="detail">
+             金币下降的速度适中，每捡到一个金币得2分；银币的下降速度较慢，捡到银币得1分；黑色币为假币，下降速度最快，如果捡到假币则游戏结束，满十分你就赢了（注：该游戏仅供娱乐）
+         </div>
+         <input type="button" value="确 定" class="confirm">
+         <div class="circles">X</div>
+      </div>
+      <canvas id="can" width="1024" height="800"></canvas>
+      <span class="result">得分：</span>
+      <input type="text" class="score" value="0" id="cash">
+   </div>
+</body>
+</html>
+<script src="jquery-1.7.min.js"></script>
+<script>
+    var arr = ["money1.png","money2.png","money3.png","people.png"];  //获取图片路径
+    var can = document.getElementById("can");  //画布
+    var pen = can.getContext("2d");   //画笔
+    var cash = document.getElementById("cash");  //画布
+//    alert(cash.value)
+     
+    var money1 = [];  //存储金币的个数
+    var money2 = [];  //获取银币的个数
+    var money3 = [];  //获取假钱的位置
+
+    var people = {    //初始化人的位置
+        x_: 260,
+        y_: 500,
+        pic:0
+    }; 
+    
+    var nums = 0; //初始金额
+    
+    
+
+    
+   //键盘事件
+    window.onkeydown = function (e) {
+        var key_ = e.keyCode;
+        switch (key_) {
+        case 37: //键盘上下左右 左方向键
+            if (people.x_ > 10)
+                people.x_ -= 5;   //如果人的位置没有超过屏幕位置就可以移动
+            break;
+
+        case 39: //键盘上下左右 右方向键
+            if (people.x_ < 1000)
+                people.x_ += 5;
+            break;
+
+        case 38: //键盘上下左右 上方向键
+            if (people.y_ > 10)
+                people.y_ -= 5;
+            break;
+                
+        case 40: //键盘上下左右 下方向键
+            if (people.y_ < 800)
+                people.y_ += 5;
+            break;
+        }
+
+    }
+    
+    var set;
+//  
+    function setTime(){
+    imgLoads(arr, function(img){
+        pen.drawImage(img.people, 0, 0, 60, 60, people.x_, people.y_, 60, 60);
+        
+        clearInterval(set);
+        
+        set = setInterval(function () {
+
+            pen.clearRect(0, 0, 1024, 800);
+
+            for (var j = 0; j < money1.length; j++) {    //遍历数组位置
+
+                //如果我们的金币数目大于0 说明存在钱 开始渲染    
+                if (money1.length > 0) {  
+                    if (money1[j].x_ > 1000) {
+                        money1.splice(j, 1);  //超出屏幕位置则消失
+                    } else {
+                        pen.drawImage(img.money1, 0, 0, 60, 60, money1[j].x_, money1[j].y_+=7, 60, 60);
+                    }
+                }
+            }
+            
+            for (var j = 0; j < money2.length; j++) {    //遍历数组位置
+
+                //如果我们的银币数目大于0 说明存在钱 开始渲染    
+                if (money2.length > 0) {  
+                    if (money2[j].x_ > 1000) {
+                        money2.splice(j, 1);  //超出屏幕位置则消失
+                    } else {
+                        pen.drawImage(img.money2, 0, 0, 60, 60, money2[j].x_, money2[j].y_+=5, 60, 60);
+                    }
+                }
+            }
+            
+            for (var j = 0; j < money3.length; j++) {    //遍历数组位置
+
+                //如果我们的假币数目大于0 说明存在钱 开始渲染    
+                if (money3.length > 0) {  
+                    if (money3[j].x_ > 1000) {
+                        money3.splice(j, 1);  //超出屏幕位置则消失
+                    } else {
+                        pen.drawImage(img.money3, 0, 0, 60, 60, money3[j].x_, money3[j].y_+=10, 60, 60);
+                    }
+                }
+            }
+            //======================================================================================
+            //遍历出所有的金币的位置 与人 进行碰撞检测
+            for (var k = 0; k < money1.length; k++) {
+                var status = crash(money1[k].x_, money1[k].y_, 60, 60, people.x_, people.y_, 60, 60);
+                if (status) {
+                    money1.splice(k, 1);//如果碰撞到则消失
+                    nums+=2;
+                    cash.value = nums;
+                   if(nums >= 10)
+                    {
+                        clearInterval(set);
+                        alert("你赢了!");
+                         window.history.go(0);
+                    }
+                     }
+               }
+            
+             //遍历出所有的银币的位置 与人 进行碰撞检测
+            for (var k = 0; k < money2.length; k++) {
+                var status = crash(money2[k].x_, money2[k].y_, 60, 60, people.x_, people.y_, 60, 60);
+                if (status) {
+                  money2.splice(k, 1);      //如果碰撞到则消失
+                  nums++;
+                  cash.value = nums;
+                 if(nums >= 10)
+                   {
+                       clearInterval(set);
+                       alert("你赢了");
+                       window.history.go(0);
+                    }
+                }
+               }   
+            
+            //遍历出所有的假币的位置 与人 进行碰撞检测
+            for (var k = 0; k < money3.length; k++) {
+                var status = crash(money3[k].x_, money3[k].y_, 60, 60, people.x_, people.y_, 60, 60);
+                if (status) {
+                   money3.splice(k, 1);      //如果碰撞到则消失
+                   clearInterval(set);
+                   alert("游戏结束！"); 
+                    window.history.go(0);    //游戏结束时刷新页面
+                     }
+               }             
+        pen.drawImage(img.people, 0, people.pic*60, 60, 60, people.x_, people.y_, 60, 60);
+
+        }, 1000/24);
+        
+
+    });
+    }
+    
+ 
+    
+  pushMoney1(1000);
+  pushMoney2(1000);
+  pushMoney3(1000);
+
+
+    //===================================================
+    //公共方法
+    //生成钱的方法
+    function pushMoney1(time_){
+        setInterval(function(){
+            var random_ = Math.ceil(Math.random() * 800);   //获取随机数
+            money1.push(
+               {
+                   x_ : random_,        
+                   y_ : -100
+               }
+            );
+        },time_)
+    }
+    
+    function pushMoney2(time_){
+        setInterval(function(){
+            var random_ = Math.ceil(Math.random() * 800);
+            money2.push(
+               {
+                   x_ : random_,
+                   y_ : -100
+               }
+            );
+        },time_)
+    }
+    
+    
+    function pushMoney3(time_){
+        setInterval(function(){
+            var random_ = Math.ceil(Math.random() * 800);
+            money3.push(
+               {
+                   x_ : random_,
+                   y_ : -100
+               }
+            );
+        },time_)
+    }
+    
+    
+     //懒加载的方法
+    function imgLoads(arr, callBack_) {
+        var json = {}; //存储我们的图片对象
+        var len = arr.length;
+        var load = 0;
+
+        for (var i = 0; i < len; i++) {     
+            var img = new Image();
+            img.onload = function () {
+                load++;
+                if (load == len) {
+                    callBack_(json);
+                }
+            }
+            img.src = arr[i];
+            var key_ = arr[i].split(".")[0];
+            json[key_] = img;
+        }
+    }
+    
+    //碰撞检测、匹配
+    function crash(x1,y1,w1,h1,x2,y2,w2,h2){
+        var l1 = x1;
+        var r1 = x1+w1;
+        var t1 = y1;
+        var b1 = y1+h1;
+        
+        var l2 = x2;
+        var r2 = x2+w2;
+        var t2 = y2;
+        var b2 = y2+h2;
+        
+        if (r1 < l2 || l1 > r2 || t1 > b2 || b1 < t2) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+    
+$(function(){   
+    $(".circles").click(function(){
+        $(".bg, .login").slideUp();        
+    })
+    $(".confirm").click(function(){
+        $(".bg, .login").slideUp();  
+           setTime();
+    })
+}) 
+    
+    
+</script>

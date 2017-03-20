@@ -1,0 +1,109 @@
+*{
+    padding: 0;
+    margin: 0;
+}
+
+html, body{
+    width: 100%;
+    height: 100%;
+}
+
+.box{
+    margin: 0;
+    padding: 0;
+}
+
+#can{
+    background: url("images/bj.jpg");
+
+    margin: 0 auto;
+}
+
+.result{
+    position: absolute;
+    top: 38px;
+    width: 218px;
+    height: 20px; 
+}
+
+.score{
+    position: absolute;
+    top: 38px;
+    left: 1080px;
+    width: 218px;
+    height: 20px;
+}
+
+.bg{
+        width: 100%;
+        height: 100%;
+        position: fixed;
+        background: #000;
+        opacity: 0.5;
+        left: 0;
+        top: 0;
+        z-index: 10;
+/*        display: none;*/
+    }
+.login{
+        width: 600px;
+        height: 400px;
+        background: #FFF;
+        position: fixed;
+        left: 20%;
+        top: 20%;
+        margin-top: 0px;
+        margin-left: 50px;
+        z-index: 10;
+/*        display: none;*/
+    }
+
+
+    
+.circles{
+        width: 20px;
+        height: 20px;
+        line-height: 20px;
+        text-indent: 6px;
+        color: #FFF;
+        background: #333;
+        font-size: 16px;
+        border-radius: 10px;
+        text-align: 20px;
+        cursor: pointer;
+        float: right;
+        opacity: 0.5;
+    }
+
+.regular{
+    font-family: "幼圆";
+    width: 120px;
+    height: 30px;
+    font-size: 22px;
+    position: absolute;
+    left: 220px;
+    top: 80px;
+    text-align: center;
+}   
+
+.detail{
+    font-family: "幼圆";
+    width: 500px;
+    height: 100px;
+    position: absolute;
+    left: 50px;
+    top: 140px;
+    font-size: 18px;
+}
+
+.confirm{
+    width: 80px;
+    height: 30px;
+    font-size: 18px;
+    font-family: "幼圆";
+    position: absolute;
+    left: 400px;
+    top: 280px;
+    border-radius: 5px;
+    
+}
